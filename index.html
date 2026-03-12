@@ -10,22 +10,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* BRAND MANUAL COLORS */
             --deep-space: #0A0E17;
             --navy-dark: #141923;
             --electric-blue: #176BFF;
+            --sky-bright: #7CB3FF;
+            --cyber-cyan: #00D4FF;
             --neural-gradient: linear-gradient(135deg, #176BFF, #8B5CF6);
-            --glass-bg: rgba(20, 25, 35, 0.85);
+            --glass-bg: rgba(20, 25, 35, 0.8);
             --glass-border: rgba(255, 255, 255, 0.08);
             --white: #FFFFFF;
             --text-muted: #A0AEC0;
-            --radius-premium: 24px;
-            --transition-primary: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+            --radius-premium: 14px;
+            --transition-primary: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            --neon-glow: 0 0 15px rgba(23, 107, 255, 0.3);
+            --cyan-glow: 0 0 15px rgba(0, 212, 255, 0.4);
             
-            /* Harmony Tokens - Unified Sizes */
-            --font-h1: clamp(2rem, 3.5vw, 3.5rem);
-            --font-h3: 1.3rem;
-            --font-body: 1.05rem;
-            --font-desc: 1.25rem;
+            /* Hierarchy Tokens */
+            --font-h1: clamp(1.8rem, 3.8vw, 3.2rem);
+            --font-h3: 1.2rem;
+            --font-body: 1rem;
+            --font-desc: 1.15rem;
+
+            /* Strict Layout Constraints */
+            --safe-padding-x: 8%;
+            --header-h: 10vh;
+            --footer-h: 10vh;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
@@ -37,203 +47,322 @@
             height: 100vh;
             width: 100vw;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-rows: var(--header-h) 1fr var(--footer-h);
         }
 
+        /* 🎬 BACKGROUND STYLING */
         .ambient-bg {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: radial-gradient(circle at 10% 10%, rgba(23, 107, 255, 0.08) 0%, transparent 40%),
-                        radial-gradient(circle at 90% 90%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+            background: var(--deep-space);
+        }
+        .blob {
+            position: absolute;
+            width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(23, 107, 255, 0.1) 0%, transparent 70%);
+            filter: blur(80px);
+            z-index: -1;
         }
 
-        .branding-footer {
-            position: fixed;
-            bottom: 3rem;
-            left: 5%;
-            z-index: 100;
-        }
+        /* 📋 HEADER & PROGRESS */
+        header { padding: 0 var(--safe-padding-x); display: flex; align-items: center; position: relative; }
+        .progress-container { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: rgba(255, 255, 255, 0.05); }
+        .progress-bar { height: 100%; background: var(--neural-gradient); width: 0%; transition: width 0.5s ease; box-shadow: 0 0 15px rgba(23, 107, 255, 0.5); }
 
-        .logo {
+        /* 🏛️ MAIN CONTENT CONTAINER */
+        main { padding: 0 var(--safe-padding-x); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .slide { position: absolute; width: calc(100% - (var(--safe-padding-x) * 2)); max-width: 1400px; opacity: 0; visibility: hidden; transform: translateY(20px); transition: var(--transition-primary); display: flex; flex-direction: column; justify-content: center; height: 100%; }
+        .slide.active { opacity: 1; visibility: visible; transform: translateY(0); }
+
+        /* ⌨️ TYPOGRAPHY */
+        h1 { font-family: 'Outfit', sans-serif; font-size: var(--font-h1); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: -0.04em; }
+        .title-gradient { background: var(--neural-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.2)); }
+        .desc { font-size: var(--font-desc); color: var(--text-muted); line-height: 1.4; max-width: 850px; margin-bottom: 2rem; font-weight: 400; }
+
+        /* 🪟 GLASS CARDS */
+        .window-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+        .card { 
+            background: rgba(20, 25, 35, 0.6); 
+            backdrop-filter: blur(30px); 
+            border: 1px solid var(--glass-border); 
+            padding: 2rem; 
+            border-radius: var(--radius-premium); 
+            transition: var(--transition-primary); 
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before { 
+            content: ''; 
+            position: absolute; 
+            top: 0; left: 0; width: 100%; height: 2px; 
+            background: var(--neural-gradient); 
+            opacity: 0; transition: var(--transition-primary);
+        }
+        .card:hover { 
+            transform: translateY(-8px); 
+            border-color: rgba(23, 107, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), var(--neon-glow);
+        }
+        .card:hover::before { opacity: 1; }
+        
+        .card h3 { font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: var(--cyber-cyan); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; }
+        .card p { color: var(--text-muted); font-size: 1.05rem; line-height: 1.6; }
+        .card .big-stat { font-size: 4.5rem; font-weight: 900; font-family: 'Outfit', sans-serif; background: var(--neural-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; display: block; filter: drop-shadow(0 0 15px rgba(23, 107, 255, 0.3)); }
+
+        /* FAQ Styling */
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 1100px;
+        }
+        .faq-item {
+            background: rgba(255,255,255,0.02);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem 3rem;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            transition: var(--transition-primary);
+            cursor: pointer;
+        }
+        .faq-item:hover {
+            transform: translateX(15px) scale(1.02);
+            background: rgba(23, 107, 255, 0.05);
+            border-color: var(--cyber-cyan);
+            box-shadow: var(--cyan-glow);
+        }
+        .faq-item::before {
+            content: '?';
+            width: 42px; height: 42px;
+            background: var(--neural-gradient);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-family: 'Outfit'; font-size: 1.1rem;
+            flex-shrink: 0;
+            box-shadow: var(--neon-glow);
+        }
+        .faq-item p {
             font-family: 'Outfit', sans-serif;
-            font-weight: 800;
-            font-size: 1.1rem;
-            letter-spacing: 0.15rem;
-            text-transform: uppercase;
-            opacity: 0.8;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 0;
+            line-height: 1.2;
         }
 
-        .logo span { color: var(--electric-blue); }
+        /* 📸 MEDIA */
+        .browser-mockup { background: #e1e3e8; border-radius: 12px; padding: 25px 8px 8px 8px; position: relative; max-width: 550px; margin-bottom: 1.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .browser-mockup::before { content: ''; position: absolute; top: 8px; left: 10px; width: 7px; height: 7px; background: #ff5f56; border-radius: 50%; box-shadow: 12px 0 0 #ffbd2e, 24px 0 0 #27c93f; }
+        .browser-mockup img { width: 100%; display: block; border-radius: 4px; }
 
-        #presentation {
-            flex: 1;
+        /* 🏷️ FOOTER & CONTROLS */
+        footer { padding: 0 var(--safe-padding-x); display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(10, 14, 23, 0.8); backdrop-filter: blur(10px); }
+        .logo { font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1.1rem; letter-spacing: 0.15rem; text-transform: uppercase; display: flex; align-items: center; gap: 12px; }
+        .logo::before { content: ''; width: 4px; height: 18px; background: var(--neural-gradient); border-radius: 4px; box-shadow: var(--neon-glow); }
+        .logo span { color: var(--electric-blue); font-weight: 900; }
+        .tabs-nav { display: flex; gap: 1rem; }
+        .tab-btn { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); color: var(--white); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition-primary); font-size: 1.3rem; }
+        .tab-btn:hover { background: var(--electric-blue); border-color: var(--electric-blue); transform: translateY(-3px) scale(1.05); box-shadow: var(--neon-glow); }
+
+        /* 🎨 ACCENTS */
+        .hi { color: var(--cyber-cyan); font-weight: 800; text-shadow: var(--cyan-glow); }
+        .quote-box { border-left: 6px solid var(--electric-blue); padding: 2rem 2.5rem; background: rgba(23,107,255,0.08); margin: 2.5rem 0; border-radius: 0 20px 20px 0; box-shadow: inset 10px 0 30px rgba(23,107,255,0.1); }
+        .quote-box p { font-style: italic; font-size: 1.5rem; line-height: 1.4; color: var(--white); font-weight: 500; }
+        .cta-btn { 
+            background: var(--neural-gradient); 
+            padding: 1.2rem 3.5rem; 
+            border-radius: 60px; 
+            font-weight: 900; 
+            font-family: 'Outfit', sans-serif; 
+            color: #fff; 
+            cursor: pointer; 
+            display: inline-block; 
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4), var(--neon-glow); 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            transition: var(--transition-primary);
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: rotate(45deg);
+            transition: 0.8s;
+            pointer-events: none;
+        }
+        .cta-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6), var(--neon-glow);
+        }
+        .cta-btn:hover::after {
+            left: 100%;
+            top: 100%;
+        }
+
+        /* Special Investment Grid */
+        .investment-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 2rem; 
+            align-items: center; 
+            background: rgba(255,255,255,0.02);
+            padding: 2.5rem;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+        .anchor-price { border-right: 1px solid rgba(255,255,255,0.1); padding-right: 4rem; text-align: right; }
+        .anchor-price h4 { font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.1em; }
+        .anchor-price .price { font-size: 4rem; font-weight: 900; text-decoration: line-through; opacity: 0.4; font-family: 'Outfit', sans-serif; color: var(--text-muted); }
+        .price-tag { 
+            font-size: 5.5rem; 
+            font-weight: 900; 
+            font-family: 'Outfit', sans-serif; 
+            line-height: 1;
+            background: linear-gradient(180deg, #FFFFFF 0%, var(--cyber-cyan) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 12px rgba(0, 212, 255, 0.7)) 
+                    drop-shadow(0 0 25px rgba(0, 212, 255, 0.4));
+            display: block;
+            margin: 0.5rem 0;
+            letter-spacing: -0.03em;
+            text-align: center;
+        }
+
+        .red-x {
+            position: relative;
+            display: inline-block;
+        }
+        .red-x::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: -10%; width: 120%; height: 8px;
+            background: #FF3B30;
+            transform: rotate(-12deg);
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(255, 59, 48, 0.6);
+        }
+        .red-x::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: -10%; width: 120%; height: 8px;
+            background: #FF3B30;
+            transform: rotate(12deg);
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(255, 59, 48, 0.6);
+        }
+
+        /* QR Styles */
+        .cta-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .qr-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: var(--neon-glow);
+        }
+        .qr-placeholder {
+            width: 250px;
+            height: 250px;
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            margin: 0 auto 1.2rem auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 5% 140px 5%; 
-            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-
-        .slide {
-            position: absolute;
-            width: 100%;
-            max-width: 1200px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(30px);
-            transition: var(--transition-primary);
-        }
-
-        .slide.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        /* Unified Typography Hierarchy - Responsive & Fluid */
-        h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: var(--font-h1);
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 2rem;
-            word-wrap: break-word;
-        }
-
-        .title-gradient {
-            background: var(--neural-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .desc {
-            font-size: var(--font-desc);
-            color: var(--text-muted);
-            line-height: 1.6;
-            max-width: 900px;
-            margin-bottom: 2.5rem;
-        }
-
-        .window-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            padding: 2rem;
-            border-radius: var(--radius-premium);
-            transition: var(--transition-primary);
-        }
-
-        .card h3 {
-            font-family: 'Outfit', sans-serif;
-            font-size: var(--font-h3);
-            color: var(--electric-blue);
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-        }
-
-        .card p {
-            color: var(--text-muted);
-            font-size: var(--font-body);
-            line-height: 1.6;
-        }
-
-        .card .result-label {
+        .qr-card span {
             display: block;
-            margin-top: 1.5rem;
-            font-weight: 800;
-            color: var(--white);
-            font-size: 0.9rem;
+            font-family: 'Outfit';
+            font-weight: 700;
+            color: var(--sky-bright);
+            margin-bottom: 0.5rem;
         }
 
-        .controls {
-            position: fixed;
-            bottom: 3rem;
-            right: 5%;
-            display: flex;
-            gap: 1.2rem;
-            z-index: 100;
+        /* Responsive Settings */
+        @media (max-width: 1024px) {
+            .investment-grid { grid-template-columns: 1fr; gap: 2.5rem; padding: 2rem; }
+            .anchor-price { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-right: 0; padding-bottom: 2rem; text-align: center; }
+            .cta-grid { grid-template-columns: 1fr; text-align: center; gap: 3rem; }
+            .main-price { text-align: center; }
+            .faq-item p { font-size: 1.2rem; }
+            .main-price .price-tag { font-size: 4rem; }
         }
-
-        .nav-btn {
-            background: var(--white);
-            color: var(--deep-space);
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-family: 'Outfit', sans-serif;
-            font-weight: 800;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: var(--transition-primary);
-            text-transform: uppercase;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .nav-btn:hover { background: var(--electric-blue); color: var(--white); }
-        .nav-btn.secondary { background: var(--glass-bg); color: var(--white); border: 1px solid var(--glass-border); }
-
-        .hi { color: var(--electric-blue); font-weight: 700; }
-        .quote { font-style: italic; border-left: 4px solid var(--electric-blue); padding-left: 1.5rem; margin: 2rem 0; font-size: 1.2rem; }
-
-        .linkedin-screenshot {
-            background: #fff;
-            padding: 1.5rem;
-            border-radius: var(--radius-premium);
-            margin-bottom: 2rem;
-            max-width: 600px;
-        }
-
-        .linkedin-screenshot img { width: 100%; display: block; }
     </style>
 </head>
 <body>
 
-    <div class="ambient-bg"></div>
+    <div class="ambient-bg">
+        <div class="blob" style="top: -10%; left: -10%;"></div>
+        <div class="blob" style="bottom: -10%; right: -10%; background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);"></div>
+    </div>
+
+    <header>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </header>
 
     <main id="presentation">
-        
-        <!-- 1: Hook -->
+        <!-- 01: Hook -->
         <section class="slide active">
             <h1>LA IA NO ES UN <span class="title-gradient">BUSCADOR</span></h1>
             <p class="desc">Estás usando la IA como si fuera un Google glorificado. Aprende a utilizarla como el motor de ejecución que realmente debe ser.</p>
         </section>
 
-        <!-- 2: Problem -->
+        <!-- 02: Problem -->
         <section class="slide">
             <h1>EL PROBLEMA <span class="hi">REAL</span></h1>
             <p class="desc">La magia no está en la herramienta, está en el <span class="hi">INPUT</span>. </p>
-            <div class="quote">"Si le pides cosas promedio a la IA, obtendrás resultados mediocres."</div>
+            <div class="quote-box">
+                <p>"Si le pides cosas promedio a la IA, obtendrás resultados mediocres."</p>
+            </div>
         </section>
 
-        <!-- 3: The Offer -->
+        <!-- 03: The Offer -->
         <section class="slide">
-            <h1>REPOSITORIO DE ASISTENTES <br><span class="title-gradient">EJECUTIVOS COMPLETOS</span></h1>
-            <p class="desc">Un hub de <b>prompts e instrucciones maestros</b> diseñado para ahorrarte al menos 10 horas a la semana. Elimina el caos operativo hoy mismo.</p>
+            <h1>REPOSITORIO DE ASISTENTES <br><span class="title-gradient">EJECUTIVOS DE IA</span></h1>
+            <p class="desc">Un hub de <b>prompts e instrucciones maestros</b> que te ahorran al menos 10 horas a la semana. Elimina el caos hoy mismo.</p>
         </section>
 
-        <!-- 4: Target 1 -->
+        <!-- 04: Target 1 -->
         <section class="slide">
             <h1>¿ES ESTO <span class="title-gradient">PARA TI?</span></h1>
             <div class="window-grid">
                 <div class="card">
                     <h3>CEOs & DUEÑOS</h3>
-                    <p>Lideras equipos y usas IA de forma recurrente, pero sientes que no has pasado del "promptear" básico.</p>
+                    <p>Lideras equipos y usas IA de forma recurrente, pero buscas pasar del prompteo básico a la ejecución real de alto nivel.</p>
                 </div>
                 <div class="card">
                     <h3>DIRECTORES</h3>
-                    <p>Necesitas que tu equipo sea productivo pero te falta el manual técnico para delegar con seguridad.</p>
+                    <p>Lideras equipos de alto rendimiento pero sientes que la carga operativa aún te roba el tiempo que deberías dedicar a la visión estratégica.</p>
                 </div>
             </div>
         </section>
 
-        <!-- 5: Target 2 -->
+        <!-- 05: Target 2 -->
         <section class="slide">
             <h1>PARA EL <span class="title-gradient">ALTO NIVEL</span></h1>
             <div class="window-grid">
@@ -248,24 +377,24 @@
             </div>
         </section>
 
-        <!-- 6: Resultados 1 -->
+        <!-- 06: Resultados -->
         <section class="slide">
-            <h1>RESULTADOS <span class="hi">CUANTITATIVOS</span></h1>
+            <h1>RESULTADOS <span class="hi">MEDIBLES</span></h1>
             <div class="window-grid">
                 <div class="card" style="text-align: center;">
-                    <h3 style="font-size: 3.5rem; color: #fff;">+10H</h3>
-                    <p>Semanales recuperadas hoy mismo</p>
+                    <span class="big-stat">+10H</span>
+                    <p>Semanales recuperadas</p>
                 </div>
                 <div class="card">
-                    <h3>SISTEMA DE ASISTENTES</h3>
+                    <h3>SISTEMA DE ASISTENTES EJECUTIVOS</h3>
                     <p>Eliminas el trabajo manual y te enfocas en lo que realmente mueve la aguja de tu negocio.</p>
                 </div>
             </div>
         </section>
 
-        <!-- 7: Resultados 2 -->
+        <!-- 07: Resultados 2 -->
         <section class="slide">
-            <h1>RESULTADOS <span class="title-gradient">ESTRATÉGICOS</span></h1>
+            <h1>VALOR <span class="title-gradient">ESTRATÉGICO</span></h1>
             <div class="window-grid">
                 <div class="card">
                     <h3>ESCALABILIDAD</h3>
@@ -273,28 +402,28 @@
                 </div>
                 <div class="card">
                     <h3>MEMORIA ESTRATÉGICA</h3>
-                    <p>Tu IA ya no responde cosas genéricas. Recuerda tus reglas y estándares de calidad siempre.</p>
+                    <p>Tu IA asimila tus reglas de negocio y estándares de calidad en cada respuesta generada.</p>
                 </div>
             </div>
         </section>
 
-        <!-- 8: The Pack -->
+        <!-- 08: The Pack -->
         <section class="slide">
-            <h1>TU PACK DE <br><span class="title-gradient">ASISTENTES EJECUTIVOS</span></h1>
+            <h1>TU PACK DE <span class="title-gradient">ASISTENTES EJECUTIVOS DE IA</span></h1>
             <div class="window-grid">
-                <div class="card"><h3>ASISTENTE FINANCIERO</h3><p>Tu CFO de bolsillo. Lee reportes y encuentra fugas de dinero en segundos.</p></div>
-                <div class="card"><h3>ASISTENTE COMERCIAL</h3><p>Cerebro persuasivo para redactar propuestas y cerrar ventas de alto impacto.</p></div>
-                <div class="card"><h3>ASISTENTE PERSONAL</h3><p>Organiza el caos del día, resume reuniones y prioriza lo urgente.</p></div>
+                <div class="card"><h3>ASISTENTE PERSONAL</h3><p>Automatiza el análisis de documentos, resume reuniones, organiza tus pendientes y tu agenda filtrando lo más importante.</p></div>
+                <div class="card"><h3>ASISTENTE DE MERCADEO</h3><p>Para que dejes de adivinar qué decir y empieces a generar propuestas a tus clientes potenciales basadas en datos de alto impacto.</p></div>
+                <div class="card"><h3>ASISTENTE FINANCIERO</h3><p>Para que dejes de ver tablas de Excel y empieces a detectar oportunidades de rentabilidad, tomando decisiones con total claridad.</p></div>
             </div>
         </section>
 
-        <!-- 9: Entregables -->
+        <!-- 09: Entregables -->
         <section class="slide">
             <h1>¿QUÉ INCLUYE <span class="title-gradient">EL PACK?</span></h1>
             <div class="window-grid">
                 <div class="card">
                     <h3>REPOSITORIO DE PROMPTS</h3>
-                    <p>Listos para copiar y pegar en tu cuenta favorita (ChatGPT, Claude o Gemini).</p>
+                    <p>Listos para copiar y pegar en ChatGPT, Claude o Gemini ahora mismo.</p>
                 </div>
                 <div class="card">
                     <h3>INSTRUCCIONES MAESTRAS</h3>
@@ -302,28 +431,28 @@
                 </div>
                 <div class="card">
                     <h3>SOPORTE DIRECTO</h3>
-                    <p>Vía WhatsApp y Email con mi equipo para asegurar tu implementación exitosa.</p>
+                    <p>Vía WhatsApp y Email con mi equipo para asegurar tu implementación.</p>
                 </div>
             </div>
         </section>
 
         <!-- 10: Case Adriana -->
         <section class="slide">
-            <h1>CASOS DE <span class="hi">USO</span></h1>
-            <div class="linkedin-screenshot"><img src="adriana-linkedin.png" alt="Testimonio Adriana"></div>
-            <div class="card" style="border-left: 5px solid var(--electric-blue);">
+            <h1>CASO DE <span class="hi">USO</span></h1>
+            <div class="browser-mockup"><img src="adriana-linkedin.png" alt="Adriana"></div>
+            <div class="card" style="border-left: 5px solid var(--electric-blue); max-width: 800px;">
                 <h3>RETO: PASTELERÍA</h3>
-                <p>Auditoría de inventarios complejos y organización administrativa que consume el día a día.</p>
+                <p>Auditoría de inventarios y organización administrativa diaria automatizada con Asistentes Ejecutivos de IA.</p>
             </div>
         </section>
 
         <!-- 11: Case Gloria -->
         <section class="slide">
-            <h1>CASOS DE <span class="hi">USO</span></h1>
-            <div class="linkedin-screenshot"><img src="gloria-linkedin.png" alt="Testimonio Gloria"></div>
-            <div class="card" style="border-left: 5px solid var(--electric-blue);">
+            <h1>CASO DE <span class="hi">USO</span></h1>
+            <div class="browser-mockup"><img src="gloria-linkedin.png" alt="Gloria"></div>
+            <div class="card" style="border-left: 5px solid var(--electric-blue); max-width: 800px;">
                 <h3>RETO: PROFESIONAL</h3>
-                <p>Creación de perfiles profesionales y hojas de vida de alto impacto para el mercado laboral global.</p>
+                <p>Creación de perfiles y hojas de vida de alto impacto global usando Asistentes Ejecutivos de IA.</p>
             </div>
         </section>
 
@@ -331,17 +460,47 @@
         <section class="slide">
             <h1>PRUEBA SOCIAL <span class="hi">IMBATIBLE</span></h1>
             <div class="window-grid">
-                <div class="card"><p>"De redactar 1 propuesta en 6 horas a enviar 12 en una sola mañana."</p><span class="result-label">— Luis F. Bernal</span></div>
-                <div class="card"><p>"Detectó $4,500 USD en suscripciones olvidadas y gastos hormiga."</p><span class="result-label">— Alejandro García</span></div>
+                <div class="card" style="border-bottom: 3px solid var(--electric-blue);">
+                    <p>"De redactar 1 propuesta en 6 horas a enviar 12 en una sola mañana gracias a los Asistentes Ejecutivos de IA."</p>
+                    <span style="display:block; margin-top:1.5rem; font-weight:800; font-family:'Outfit';">LUIS BERNAL / CONSULTOR</span>
+                </div>
+                <div class="card" style="border-bottom: 3px solid var(--cyber-cyan);">
+                    <p>"Detectó $4,500 USD en gastos que mi contador no vio usando el Asistente Ejecutivo Financiero."</p>
+                    <span style="display:block; margin-top:1.5rem; font-weight:800; font-family:'Outfit';">ALEJANDRO G. / AGENCIA</span>
+                </div>
             </div>
         </section>
 
         <!-- 13: Inversión -->
         <section class="slide">
-            <h1>INVERSIÓN <span class="hi">$50 USD</span></h1>
-            <p class="desc">Ahorra lo que gastarías en 3 ejecutivos senior. Tu tiempo vale mucho más que esta suscripción.</p>
-            <div class="card" style="display: inline-block;">
-                <p>✓ Repositorio de Prompts <br>✓ Instrucciones de Respuesta <br>✓ Soporte WhatsApp Directo</p>
+            <h1 style="text-align: center; margin-bottom: 2rem;">INVERSIÓN</h1>
+            <div class="window-grid">
+                <div class="card" style="text-align: center; border-color: rgba(255,59,48,0.2); display: flex; flex-direction: column; justify-content: center;">
+                    <h4 style="font-family:'Outfit'; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:1.5rem;">PRECIO ESTÁNDAR</h4>
+                    <span class="red-x" style="font-size: 3.5rem; font-weight: 900; font-family: 'Outfit'; color: var(--text-muted); opacity: 0.6;">$100 USD</span>
+                </div>
+                <div class="card" style="border-width: 2px; border-color: var(--electric-blue); box-shadow: 0 0 30px rgba(23, 107, 255, 0.4); text-align: center; background: linear-gradient(180deg, rgba(23, 107, 255, 0.1) 0%, rgba(10, 14, 23, 0.9) 100%);">
+                    <h4 style="font-family:'Outfit'; color:var(--cyber-cyan); text-transform:uppercase; letter-spacing:0.2em; margin-bottom:1rem; font-weight:800;">SOLO EN ESTE WEBINAR</h4>
+                    <span class="price-tag">$20 USD</span>
+                    <p style="color: var(--sky-bright); font-weight: 700; margin-top: 1.5rem; font-size: 1.1rem;">✓ PAGO ÚNICO - ACCESO DE POR VIDA</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 14: CTA & QR -->
+        <section class="slide">
+            <div class="cta-grid">
+                <div>
+                    <h1 class="title-gradient" style="margin-bottom: 2.5rem;">RECUPERA TU TIEMPO Y ENERGÍA</h1>
+                    <p class="desc" style="font-size: 1.6rem; font-weight: 600; line-height: 1.4;">Ahorra 10 horas a la semana desde hoy mismo.</p>
+                </div>
+                <div class="qr-card">
+                    <span>ESCANEA PARA PAGAR</span>
+                    <div class="qr-placeholder" style="border: none;">
+                        <img src="qr-pago.jpg" alt="QR de Pago" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600;">Acceso inmediato tras el pago</p>
+                </div>
             </div>
         </section>
 
@@ -351,54 +510,101 @@
             <div class="window-grid">
                 <div class="card">
                     <h3>SEGURIDAD TOTAL</h3>
-                    <p>Tus datos son tuyos. Nadie más los ve. El control es 100% privado en tu cuenta.</p>
+                    <p>Tus datos son 100% privados en tu propia cuenta de IA. No tenemos acceso a tu información.</p>
                 </div>
                 <div class="card">
-                    <h3>SIN SOFTWARES EXTRA</h3>
-                    <p>Funciona en ChatGPT Plus, Claude o Gemini. No tienes que comprar nada adicional hoy.</p>
+                    <h3>CERO COSTOS EXTRA</h3>
+                    <p>Funciona en lo que ya usas. No tienes que comprar ningún software nuevo hoy mismo.</p>
                 </div>
             </div>
         </section>
 
-        <!-- 15: Objeciones -->
+        <!-- 15: FAQ 1 -->
         <section class="slide">
-            <h1>DERRIBANDO <span class="title-gradient">MUROS MENTALES</span></h1>
-            <div class="window-grid">
-                <div class="card"><h3>"MI NEGOCIO ES DIFERENTE"</h3></div>
-                <div class="card"><h3>"¿SOFTWARE NUEVO?"</h3></div>
-                <div class="card"><h3>"NO SOY TECNOLÓGICO"</h3></div>
-                <div class="card"><h3>"¿SEGURIDAD DE DATOS?"</h3></div>
+            <h1 class="title-gradient">PREGUNTAS FRECUENTES</h1>
+            <div class="faq-list">
+                <div class="faq-item"><p>¿Mi negocio es raro o diferente, cómo adapto mi prompt?</p></div>
+                <div class="faq-item"><p>¿En dónde creo mi asistente? ¿Tengo que pagar software nuevo?</p></div>
+                <div class="faq-item"><p>¿No soy tecnológico, qué pasa si me enredo?</p></div>
             </div>
         </section>
 
-        <!-- 16: Cierre -->
+        <!-- 16: FAQ 2 -->
         <section class="slide">
-            <h1>RECUPERA TU <span class="title-gradient">DIGNIDAD OPERATIVA</span></h1>
-            <p class="desc">Deja de operar como un <b>cavernícola o un dinosaurio digital</b> y empieza a ejecutar ahora mismo.</p>
-            <div style="background: var(--electric-blue); color: #fff; padding: 1.3rem 2.8rem; border-radius: 50px; display: inline-block; font-weight: 800; cursor: pointer;">QUIERO MI ACCESO AHORA</div>
+            <h1 class="title-gradient">PREGUNTAS FRECUENTES</h1>
+            <div class="faq-list">
+                <div class="faq-item"><p>¿Me preocupa la seguridad, Diego se queda con mis datos?</p></div>
+                <div class="faq-item"><p>¿Qué resultado real obtendré al instante?</p></div>
+            </div>
         </section>
 
+        <!-- 18: Cierre (Final) -->
+        <section class="slide" style="text-align: center;">
+            <h1 class="title-gradient">¿LISTO PARA COMENZAR?</h1>
+            <p class="desc" style="margin: 0 auto 1.5rem auto; font-size: 1.5rem; font-weight: 600;">El momento de escalar con IA es ahora.</p>
+            <div class="qr-card" style="max-width: 400px; margin: 0 auto;">
+                <span>ESCANEA PARA ACCEDER</span>
+                <div class="qr-placeholder" style="border: none;">
+                    <img src="qr-pago.jpg" alt="QR de Pago" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600;">PAGO ÚNICO - ACCESO INMEDIATO</p>
+            </div>
+        </section>
+
+        <!-- 18: Q&A -->
+        <section class="slide" style="text-align: center;">
+            <h1 class="title-gradient" style="font-size: 5rem;">ESPACIO DE PREGUNTAS</h1>
+            <p class="desc" style="margin: 0 auto;">¿Tienes dudas sobre cómo implementar los Asistentes Ejecutivos de IA en tu caso específico?</p>
+            <div class="window-grid" style="margin-top: 3rem; justify-content: center;">
+                <div class="card" style="max-width: 400px; margin: 0 auto;">
+                    <h3>SOPORTE EN VIVO</h3>
+                    <p>Resuelve tus dudas ahora mismo antes de cerrar la sesión de hoy.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 21: Sorteo Mentoria -->
+        <section class="slide">
+            <div class="cta-grid">
+                <div>
+                    <h1 class="title-gradient" style="margin-bottom: 2.5rem;">SORTEO DE MENTORÍA</h1>
+                    <p class="desc" style="font-size: 1.6rem; font-weight: 700; line-height: 1.4; color: var(--white);">Participa por una mentoría valorada en $2,500</p>
+                </div>
+                <div class="qr-card" style="border-color: var(--cyber-cyan);">
+                    <span style="color: var(--cyber-cyan);">ESCANEA PARA PARTICIPAR</span>
+                    <div class="qr-placeholder" style="border-color: var(--cyber-cyan); border-style: solid;">
+                        <img src="qr-sorteo.jpg" alt="QR Sorteo" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600;">Solo participantes en vivo</p>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <div class="branding-footer">
+    <footer>
         <div class="logo">DIEGO<span>_PÁRAMO</span></div>
-    </div>
-
-    <div class="controls">
-        <button class="nav-btn secondary" onclick="prev()"> Anteriores </button>
-        <button class="nav-btn" onclick="next()"> Siguiente </button>
-    </div>
+        <nav class="tabs-nav">
+            <button class="tab-btn" onclick="prev()"><span>‹</span></button>
+            <button class="tab-btn" onclick="next()"><span>›</span></button>
+        </nav>
+    </footer>
 
     <script>
         let current = 0;
         const slides = document.querySelectorAll('.slide');
-        function update() { slides.forEach((s, i) => s.classList.toggle('active', i === current)); }
+        const progressBar = document.getElementById('progressBar');
+
+        function update() { 
+            slides.forEach((s, i) => s.classList.toggle('active', i === current));
+            progressBar.style.width = ((current) / (slides.length - 1)) * 100 + '%';
+        }
         function next() { if (current < slides.length - 1) { current++; update(); } }
         function prev() { if (current > 0) { current--; update(); } }
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === ' ') next();
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') next();
             if (e.key === 'ArrowLeft') prev();
         });
+        update();
     </script>
 </body>
 </html>
